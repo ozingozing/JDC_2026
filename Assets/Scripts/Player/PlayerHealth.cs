@@ -3,31 +3,24 @@ using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
-    [Header("HP Settings")]
-    public int maxHP = 3;
-
-    [SerializeField] private int currentHP;
-    public bool IsDead => currentHP <= 0;
 
     [Header("HP Bar")]
     [SerializeField] private Image hpFillImage;
 
     private void Start()
     {
-        currentHP = maxHP;
+        Player.Instance.currentHP = Player.Instance.maxHP;
         UpdateHPBar();
     }
 
     public void TakeDamage(int damage)
     {
-        currentHP -= damage;
-        currentHP = Mathf.Clamp(currentHP, 0, maxHP);
+        Player.Instance.currentHP -= damage;
+        Player.Instance.currentHP = Mathf.Clamp(Player.Instance.currentHP, 0, Player.Instance.maxHP);
 
         UpdateHPBar();
 
-        Debug.Log($"Player HP: {currentHP}/{maxHP}");
-
-        if (currentHP <= 0)
+        if (Player.Instance.currentHP <= 0)
         {
             Die();
         }
@@ -35,8 +28,8 @@ public class PlayerHealth : MonoBehaviour
 
     public void Heal(int healAmount)
     {
-        currentHP += healAmount;
-        currentHP = Mathf.Clamp(currentHP, 0, maxHP);
+        Player.Instance.currentHP += healAmount;
+        Player.Instance.currentHP = Mathf.Clamp(Player.Instance.currentHP, 0, Player.Instance.maxHP);
 
         UpdateHPBar();
     }
@@ -48,7 +41,7 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
-        hpFillImage.fillAmount = (float)currentHP / maxHP;
+        hpFillImage.fillAmount = (float)Player.Instance.currentHP / Player.Instance.maxHP;
     }
 
     private void Die()

@@ -24,7 +24,7 @@ public class PlayerMove : MonoBehaviour
 
     private void Update()
     {
-        if(!playerHealth.IsDead)
+        if(!Player.Instance.IsDead)
             Move();
     }
 

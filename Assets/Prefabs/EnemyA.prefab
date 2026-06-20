@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 3115090408720772201}
   - component: {fileID: 4687813870503499941}
   m_Layer: 6
-  m_Name: FallObj
+  m_Name: EnemyA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

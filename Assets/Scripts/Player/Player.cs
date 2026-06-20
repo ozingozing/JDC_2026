@@ -9,6 +9,12 @@ public class Player : MonoBehaviour
     public float harpoonSpeed = 15f;
     public float harpoonMaxRange = 10f;
 
+
+    [Header("HP Settings")]
+    public int maxHP = 3;
+    public int currentHP;
+    public bool IsDead => currentHP <= 0;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
