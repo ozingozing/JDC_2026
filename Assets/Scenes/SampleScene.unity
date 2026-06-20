@@ -1450,7 +1450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f0ab17c9cb286c4dbefbbb032d3ba07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPrefab: {fileID: 8173784390913911731, guid: a52a33d78a433bf4499551b13aaceec3, type: 3}
+  spawnPrefab: {fileID: 4134014453357182363, guid: fb4644aee01b92c45a8c814841de23b4, type: 3}
   spawnItems:
   - {fileID: 4497165563901878338, guid: e53e5e4099aa3904abae5705db863346, type: 3}
   - {fileID: 4244050696894408171, guid: 3a52c73d1e8f88640879253546e5e513, type: 3}
@@ -3608,7 +3608,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visionMaterial: {fileID: 2100000, guid: de26ee201f5048d45a5517dd07e7c85b, type: 2}
-  edgeSoftness: 0.02
+  edgeSoftness: 0.1
 --- !u!1001 &1490290796
 PrefabInstance:
   m_ObjectHideFlags: 0
