@@ -38,6 +38,7 @@ public class Player : MonoBehaviour
 
     public void AddHarpoonRange(float value)
     {
-        harpoonMaxRange += value;
+        //harpoonMaxRange += value;
+        currentHP = Mathf.Clamp(currentHP + value, 0f, maxHP);
     }
 }
