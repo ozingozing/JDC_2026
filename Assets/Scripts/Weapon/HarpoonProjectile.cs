@@ -5,13 +5,16 @@ public class HarpoonProjectile : MonoBehaviour
     private enum HarpoonState { Outbound, Inbound }
     private HarpoonState currentState = HarpoonState.Outbound;
 
+    [SerializeField] private float fixedReturnTime = 1.0f;
+
     private HarpoonLauncher launcher;
     private float damage;
     private float speed;
     private float maxRange;
-    private Transform ownerTransform; // ���ƿ� ������ (�÷��̾��� �߻� ��ġ)
+    private Transform ownerTransform;
 
     private Vector3 startPosition;
+    private float returnSpeed;
 
     private int enemyLayer;
 
@@ -55,12 +58,13 @@ public class HarpoonProjectile : MonoBehaviour
 
     private void CheckRange()
     {
-        // ���� �������κ��� �̵��� �Ÿ� üũ
         float traveledDistance = Vector3.Distance(startPosition, transform.position);
 
-        // �����Ÿ��� �����ϸ� ���ƿ��� ���·� ����
         if (traveledDistance >= maxRange)
         {
+            // 복귀 시작 시점의 거리로 고정 복귀 속도 계산
+            float distanceToOwner = Vector3.Distance(transform.position, ownerTransform.position);
+            returnSpeed = distanceToOwner / Mathf.Max(fixedReturnTime, 0.01f);
             currentState = HarpoonState.Inbound;
         }
     }
@@ -73,8 +77,7 @@ public class HarpoonProjectile : MonoBehaviour
             return;
         }
 
-        // �÷��̾� ��ġ�� ���� �̵�
-        transform.position = Vector3.MoveTowards(transform.position, ownerTransform.position, speed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, ownerTransform.position, returnSpeed * Time.deltaTime);
 
         // �÷��̾� ȸ�� ���⿡ ���� �ۻ����� �÷��̾ �ٶ󺸰� ������ (���� ����)
         Vector3 returnDir = ownerTransform.position - transform.position;

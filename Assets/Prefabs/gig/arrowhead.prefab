@@ -100,6 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82dcd1cb10456fa4faebef42cd0bc4e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HarpoonProjectile
+  fixedReturnTime: 0.6
 --- !u!65 &-1559556978939810445
 BoxCollider:
   m_ObjectHideFlags: 0

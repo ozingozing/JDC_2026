@@ -11,9 +11,9 @@ public class Player : MonoBehaviour
 
 
     [Header("HP Settings")]
-    public int maxHP = 3;
-    public int currentHP;
-    public bool IsDead => currentHP <= 0;
+    public float maxHP = 100f;
+    public float currentHP;
+    public bool IsDead => currentHP <= 0f;
 
     private void Awake()
     {
