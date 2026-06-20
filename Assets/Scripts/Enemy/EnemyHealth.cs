@@ -59,17 +59,27 @@ public class EnemyHealth : MonoBehaviour
 
     private void DropItem()
     {
-        // 아이템 프리팹이 연결되어 있지 않다면 그냥 리턴
-        if (itemPrefab == null) return;
-
-        // 확률 계산 (Random.value는 0.0 ~ 1.0 사이의 랜덤한 실수를 반환합니다)
-        if (Random.value <= dropChance)
+        if (Random.value > dropChance)
         {
-            // 적의 현재 위치에 오프셋을 더해 스폰 위치 계산
-            Vector3 spawnPosition = transform.position + spawnOffset;
-
-            // 아이템 스폰
-            Instantiate(itemPrefab, spawnPosition, Quaternion.Euler(90f, 0, 0));
+            return;
         }
+
+        if (RandomSpawner.Instance == null)
+        {
+            Debug.LogWarning("RandomSpawner.Instance가 없습니다. 씬에 RandomSpawner 오브젝트가 있는지 확인하세요.");
+            return;
+        }
+
+        GameObject randomItemPrefab = RandomSpawner.Instance.GetRandomSpawnItem();
+
+        if (randomItemPrefab == null)
+        {
+            Debug.LogWarning("랜덤으로 가져올 아이템 프리팹이 없습니다.");
+            return;
+        }
+
+        Vector3 spawnPosition = transform.position + spawnOffset;
+
+        Instantiate(randomItemPrefab, spawnPosition, Quaternion.Euler(90f, 0f, 0f));
     }
 }

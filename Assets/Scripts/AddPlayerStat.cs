@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class AddPlayerStat : MonoBehaviour
@@ -17,8 +18,31 @@ public class AddPlayerStat : MonoBehaviour
     [Tooltip("추가할 스탯 수치입니다.")]
     public float statValue = 1f;
 
+    [Header("Pickup Delay")]
+    [Tooltip("아이템이 활성화된 후 획득 가능해지기까지의 시간")]
+    public float pickupDelay = 0.3f;
+
+    private bool canPickup = false;
+
+    private void OnEnable()
+    {
+        canPickup = false;
+        StartCoroutine(PickupDelayRoutine());
+    }
+
+    private IEnumerator PickupDelayRoutine()
+    {
+        yield return new WaitForSeconds(pickupDelay);
+        canPickup = true;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
+        if(canPickup == false)
+        {
+            return;
+        }
+
         // 플레이어와 충돌했을 때만 스탯을 적용
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
