@@ -7,11 +7,6 @@ public class HarpoonLauncher : MonoBehaviour
     [SerializeField] private GameObject harpoonPrefab;   // �߻��� �ۻ� ������
     [SerializeField] private Transform firePoint;        // �ۻ��� �߻�� ��ġ (�ۻ��� ���κ�)
 
-    [Header("Harpoon Stats (Upgradable)")]
-    public float damage = 10f;          // �ۻ� ������
-    public float speed = 15f;           // �ۻ� ���ư���/ȸ���Ǵ� �ӵ�
-    public float maxRange = 10f;        // �ۻ� �����Ÿ�
-
     private Camera mainCamera;
     private bool isHarpoonOut = false;  // �̹� �ۻ��� �߻�Ǿ� ���ư��� ������ üũ
 
@@ -64,7 +59,13 @@ public class HarpoonLauncher : MonoBehaviour
 
         if (harpoon != null)
         {
-            harpoon.Setup(this, damage, speed, maxRange, firePoint);
+            harpoon.Setup(
+                this,
+                Player.Instance.harpoonDamage,
+                Player.Instance.harpoonSpeed,
+                Player.Instance.harpoonMaxRange,
+                firePoint
+            );
         }
     }
 

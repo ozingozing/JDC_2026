@@ -30,7 +30,7 @@ public class RandomSpawner : MonoBehaviour
         Instantiate(spawnPrefab, spawnPosition, Quaternion.identity);
     }
 
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
 
@@ -40,5 +40,5 @@ public class RandomSpawner : MonoBehaviour
         Gizmos.DrawLine(start, end);
         Gizmos.DrawSphere(start, 0.2f);
         Gizmos.DrawSphere(end, 0.2f);
-    }
+    }*/
 }
