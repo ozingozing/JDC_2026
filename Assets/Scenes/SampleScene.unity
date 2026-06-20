@@ -1436,7 +1436,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!114 &549170739
 MonoBehaviour:
@@ -1450,9 +1450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f0ab17c9cb286c4dbefbbb032d3ba07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPrefab:
-  - {fileID: 1849215552314109476, guid: b8f37595add21d34e81ac99f32462735, type: 3}
-  - {fileID: 5053246515973865790, guid: cd928a41008bf3c49aa9d686932b3ef2, type: 3}
+  spawnPrefab: {fileID: 8173784390913911731, guid: a52a33d78a433bf4499551b13aaceec3, type: 3}
   spawnItems:
   - {fileID: 4497165563901878338, guid: e53e5e4099aa3904abae5705db863346, type: 3}
   - {fileID: 4244050696894408171, guid: 3a52c73d1e8f88640879253546e5e513, type: 3}

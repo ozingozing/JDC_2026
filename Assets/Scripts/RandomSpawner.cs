@@ -4,8 +4,8 @@ public class RandomSpawner : MonoBehaviour
 {
     public static RandomSpawner Instance { get; private set; }
 
-    [Header("Enemy Spawn Object")]
-    public GameObject[] spawnPrefab;
+    [Header("Warning Spawn Object")]
+    public GameObject spawnPrefab;
 
     [Header("Spawn Items")]
     public GameObject[] spawnItems;
@@ -50,7 +50,7 @@ public class RandomSpawner : MonoBehaviour
         float randomX = Random.Range(minX, maxX);
         Vector3 spawnPosition = new Vector3(randomX, enemySpawnY, fixedZ);
 
-        GameObject selectedEnemy = GetRandomEnemyByStage();
+        GameObject selectedEnemy = spawnPrefab;
 
         if (selectedEnemy != null)
         {
@@ -60,31 +60,6 @@ public class RandomSpawner : MonoBehaviour
         TrySpawnItem();
     }
 
-    private GameObject GetRandomEnemyByStage()
-    {
-        if (spawnPrefab == null || spawnPrefab.Length == 0)
-        {
-            Debug.LogWarning("스폰할 몬스터 프리팹이 없습니다.");
-            return null;
-        }
-
-        if (GameManager.Instance == null)
-        {
-            Debug.LogWarning("GameManager.Instance가 없습니다.");
-            return spawnPrefab[0];
-        }
-
-        int currentStage = GameManager.Instance.currentStage;
-
-        // currentStage가 0이면 0번까지만
-        // currentStage가 1이면 1번까지
-        // currentStage가 2이면 2번까지
-        int maxIndex = Mathf.Clamp(currentStage, 0, spawnPrefab.Length - 1);
-
-        int randomIndex = Random.Range(0, maxIndex + 1);
-
-        return spawnPrefab[randomIndex];
-    }
 
     private void TrySpawnItem()
     {

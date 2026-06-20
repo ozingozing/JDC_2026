@@ -12,7 +12,7 @@ public class WarningFade : MonoBehaviour
     [SerializeField] private Transform fallingSpawnPoint;
 
     [Header("Next Object")]
-    public GameObject fallingPrefab;
+    public GameObject[] fallingPrefab;
 
     private Material targetMaterial;
     private Color originColor;
@@ -110,7 +110,12 @@ public class WarningFade : MonoBehaviour
             spawnPosition = transform.position;
         }
 
-        Instantiate(fallingPrefab, spawnPosition, Quaternion.identity);
+
+        int currentStage = GameManager.Instance.currentStage;
+        int maxIdx = Mathf.Clamp(currentStage, 0, fallingPrefab.Length - 1);
+        int randomIdx = Random.Range(0, maxIdx + 1);
+
+        GameObject.Instantiate(fallingPrefab[randomIdx], transform.position, Quaternion.identity);
     }
 
     private void OnDestroy()

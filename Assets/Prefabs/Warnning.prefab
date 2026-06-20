@@ -157,7 +157,9 @@ MonoBehaviour:
   lifeTime: 2
   targetRenderer: {fileID: 0}
   fallingSpawnPoint: {fileID: 6399440825342171772}
-  fallingPrefab: {fileID: 1849215552314109476, guid: b8f37595add21d34e81ac99f32462735, type: 3}
+  fallingPrefab:
+  - {fileID: 1849215552314109476, guid: b8f37595add21d34e81ac99f32462735, type: 3}
+  - {fileID: 5053246515973865790, guid: cd928a41008bf3c49aa9d686932b3ef2, type: 3}
 --- !u!114 &4086628171161129190
 MonoBehaviour:
   m_ObjectHideFlags: 0
