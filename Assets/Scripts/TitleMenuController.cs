@@ -1,0 +1,89 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class TitleMenuController : MonoBehaviour
+{
+    [Header("Scene")]
+    [SerializeField] private string gameplaySceneName = "SoundTest";
+
+    [Header("Buttons")]
+    [SerializeField] private Button startButton;
+    [SerializeField] private Button settingsButton;
+    [SerializeField] private Button closeSettingsButton;
+    [SerializeField] private Button exitButton;
+
+    [Header("Panels")]
+    [SerializeField] private GameObject settingsPanel;
+
+    private void Start()
+    {
+        if (startButton != null) startButton.onClick.AddListener(StartGame);
+        if (settingsButton != null) settingsButton.onClick.AddListener(OpenSettings);
+        if (closeSettingsButton != null) closeSettingsButton.onClick.AddListener(CloseSettings);
+        if (exitButton != null) exitButton.onClick.AddListener(ExitGame);
+
+        if (settingsPanel != null)
+        {
+            settingsPanel.SetActive(false);
+        }
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayBGM(BGMType.Title_BGM);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (startButton != null) startButton.onClick.RemoveListener(StartGame);
+        if (settingsButton != null) settingsButton.onClick.RemoveListener(OpenSettings);
+        if (closeSettingsButton != null) closeSettingsButton.onClick.RemoveListener(CloseSettings);
+        if (exitButton != null) exitButton.onClick.RemoveListener(ExitGame);
+    }
+
+    public void StartGame()
+    {
+        PlayUISound(SFXType.Click_SFX);
+        SceneManager.LoadScene(gameplaySceneName);
+    }
+
+    public void OpenSettings()
+    {
+        PlayUISound(SFXType.OpenMenu_SFX);
+
+        if (settingsPanel != null)
+        {
+            settingsPanel.SetActive(true);
+        }
+    }
+
+    public void CloseSettings()
+    {
+        PlayUISound(SFXType.UICancel_SFX);
+
+        if (settingsPanel != null)
+        {
+            settingsPanel.SetActive(false);
+        }
+    }
+
+    public void ExitGame()
+    {
+        PlayUISound(SFXType.UIExit_SFX);
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
+    private static void PlayUISound(SFXType type)
+    {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(type);
+        }
+    }
+}
