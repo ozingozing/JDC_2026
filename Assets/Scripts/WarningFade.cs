@@ -19,7 +19,7 @@ public class WarningFade : MonoBehaviour
 
     private void Awake()
     {
-        // 인스펙터에 직접 넣지 않았다면 자기 자신 또는 자식에서 Renderer 찾기
+        // ?ν?????? ???? ???? ????? ??? ??? ??? ??Ŀ??? Renderer ???
         if (targetRenderer == null)
         {
             targetRenderer = GetComponentInChildren<Renderer>();
@@ -27,13 +27,13 @@ public class WarningFade : MonoBehaviour
 
         if (targetRenderer != null)
         {
-            // 이 오브젝트만의 개별 머티리얼 인스턴스 사용
+            // ?? ??????????? ???? ??????? ?ν???? ???
             targetMaterial = targetRenderer.material;
             originColor = targetMaterial.color;
         }
         else
         {
-            Debug.LogError($"{gameObject.name}: Renderer를 찾을 수 없습니다.");
+            Debug.LogError($"{gameObject.name}: Renderer?? ??? ?? ???????.");
         }
     }
 
@@ -47,9 +47,14 @@ public class WarningFade : MonoBehaviour
 
     private IEnumerator FadeRoutine()
     {
+        if(GameManager.Instance.isBossSpawned)
+        {
+            yield break;
+        }
+
         float elapsedTime = 0f;
 
-        // 시작 시 완전히 보이게
+        // ???? ?? ?????? ?????
         SetAlpha(originColor.a);
 
         while (elapsedTime < lifeTime)
@@ -58,7 +63,7 @@ public class WarningFade : MonoBehaviour
 
             float progress = Mathf.Clamp01(elapsedTime / lifeTime);
 
-            // lifeTime 동안 originColor.a → 0으로 감소
+            // lifeTime ???? originColor.a ?? 0???? ????
             float alpha = Mathf.Lerp(originColor.a, 0f, progress);
 
             SetAlpha(alpha);
@@ -66,7 +71,7 @@ public class WarningFade : MonoBehaviour
             yield return null;
         }
 
-        // 마지막에 완전히 투명하게 확정
+        // ???????? ?????? ??????? ???
         SetAlpha(0f);
 
         SpawnFallingObject();
@@ -88,9 +93,15 @@ public class WarningFade : MonoBehaviour
 
     private void SpawnFallingObject()
     {
-        if (fallingPrefab == null)
+        if (fallingPrefab == null || fallingPrefab.Length == 0)
         {
-            Debug.LogWarning($"{gameObject.name}: fallingPrefab이 연결되지 않았습니다.");
+            Debug.LogWarning($"{gameObject.name}: fallingPrefab이 비어 있습니다.");
+            return;
+        }
+
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("GameManager.Instance가 없습니다.");
             return;
         }
 
@@ -102,7 +113,6 @@ public class WarningFade : MonoBehaviour
         }
         else if (targetRenderer != null)
         {
-            // Renderer의 실제 화면상 중앙 위치
             spawnPosition = targetRenderer.bounds.center;
         }
         else
@@ -110,12 +120,42 @@ public class WarningFade : MonoBehaviour
             spawnPosition = transform.position;
         }
 
-
         int currentStage = GameManager.Instance.currentStage;
+
+        // currentStage가 2 이상이면 마지막 몹, 즉 보스만 한 번 생성
+        if (currentStage >= 2)
+        {
+            if (GameManager.Instance.isBossSpawned)
+            {
+                return;
+            }
+
+            // 중요: Instantiate보다 먼저 true로 바꿔두는 게 안전함
+            GameManager.Instance.isBossSpawned = true;
+
+            Debug.Log("게임끝");
+
+            int lastIndex = fallingPrefab.Length - 1;
+
+            Instantiate(
+                fallingPrefab[lastIndex],
+                spawnPosition,
+                Quaternion.identity
+            );
+
+            return;
+        }
+
+        // currentStage 0 → 0번만
+        // currentStage 1 → 0~1번 랜덤
         int maxIdx = Mathf.Clamp(currentStage, 0, fallingPrefab.Length - 1);
         int randomIdx = Random.Range(0, maxIdx + 1);
 
-        GameObject.Instantiate(fallingPrefab[randomIdx], transform.position, Quaternion.identity);
+        Instantiate(
+            fallingPrefab[randomIdx],
+            spawnPosition,
+            Quaternion.identity
+        );
     }
 
     private void OnDestroy()
