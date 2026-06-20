@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -9162177209130202404}
   - component: {fileID: -8332499554490179854}
   - component: {fileID: 3115090408720772201}
-  - component: {fileID: 2716124757215710620}
+  - component: {fileID: 4687813870503499941}
   m_Layer: 6
   m_Name: FallObj
   m_TagString: Untagged
@@ -166,7 +166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageAmount: 1
   destroyAfterHit: 1
---- !u!114 &2716124757215710620
+--- !u!114 &4687813870503499941
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -175,7 +175,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1849215552314109476}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e36cd769e2164da4d9ca38975c5a772f, type: 3}
+  m_Script: {fileID: 11500000, guid: 0edafa61efe9ef241a72fcbe9ed51d49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 2
