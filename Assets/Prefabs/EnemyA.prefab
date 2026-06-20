@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0edafa61efe9ef241a72fcbe9ed51d49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 2
+  maxHealth: 11
   itemPrefab: {fileID: 7319887920394767480, guid: e53e5e4099aa3904abae5705db863346, type: 3}
   dropChance: 1
   spawnOffset: {x: 0, y: 0.5, z: 0}

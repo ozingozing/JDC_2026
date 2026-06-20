@@ -2309,7 +2309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hpFillImage: {fileID: 1962859030}
-  drainPerSecond: 1
+  drainPerSecond: 2
   minHP: 10
 --- !u!114 &1022221965
 MonoBehaviour:
