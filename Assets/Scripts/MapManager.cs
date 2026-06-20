@@ -6,7 +6,8 @@ public class MapManager : MonoBehaviour
     [Header("Scrolling Settings")]
     [SerializeField] private float scrollSpeed = 5f;
     [SerializeField] private float chunkLength = 20f;
-    private float despawnY; // Start()에서 카메라 기준으로 자동 계산
+    private float despawnY;
+    private float camBottomY;
 
     [Header("Map Prefabs")]
     [SerializeField] private GameObject[] startChunks;       // 처음 맵
@@ -33,20 +34,23 @@ public class MapManager : MonoBehaviour
         float halfH = Mathf.Tan(cam.fieldOfView * 0.5f * Mathf.Deg2Rad) * zDist;
         float camBottom = cam.transform.position.y - halfH;
         float camTop    = cam.transform.position.y + halfH;
-
-        // 화면 하단보다 chunkLength 하나 아래에서 디스폰 (화면 밖으로 완전히 벗어난 뒤 제거)
+        camBottomY = camBottom;
         despawnY = camBottom - chunkLength;
 
-        Debug.Log($"[MapManager] 화면 Y: {camBottom:F2}~{camTop:F2} | despawnY: {despawnY:F2} | chunkLength: {chunkLength}");
+        Debug.Log($"[MapManager] 화면 Y: {camBottom:F2}~{camTop:F2} | chunkLength: {chunkLength}");
 
-        // StartMap 1개 — 화면 하단에서 시작
+        // StartMap 1개 — 하단 기준으로 생성
         SpawnChunk(camBottom);
         currentPhase = MapPhase.Stage1;
 
-        // 화면 상단 + 여유분까지 Stage1 청크를 채움
-        for (float y = camBottom + chunkLength; y <= camTop + chunkLength; y += chunkLength)
+        // 화면 상단 + 여유분까지 Stage1 청크를 실제 bounds 기준으로 채움
+        float fillY = GetTopEdge(activeChunks.Count > 0 ? activeChunks[activeChunks.Count - 1] : null, camBottom + chunkLength);
+        while (fillY <= camTop + chunkLength)
         {
-            SpawnChunk(y);
+            SpawnChunk(fillY);
+            float newTop = GetTopEdge(activeChunks.Count > 0 ? activeChunks[activeChunks.Count - 1] : null, fillY + chunkLength);
+            if (newTop <= fillY) break;
+            fillY = newTop;
         }
     }
 
@@ -57,43 +61,54 @@ public class MapManager : MonoBehaviour
 
     private void MoveChunks()
     {
-        // 리스트에서 요소를 제거해야 하므로 역순으로 반복문을 돕니다.
         for (int i = activeChunks.Count - 1; i >= 0; i--)
         {
             GameObject chunk = activeChunks[i];
-
-            // 아래로 이동
             chunk.transform.Translate(Vector3.down * scrollSpeed * Time.deltaTime);
 
-            // 카메라 아래로 벗어났다면
-            if (chunk.transform.position.y <= despawnY)
+            // 청크 상단이 카메라 하단 아래로 완전히 벗어나면 디스폰
+            float topEdge = GetTopEdge(chunk, chunk.transform.position.y + chunkLength);
+            if (topEdge <= camBottomY)
             {
-                // 새 청크가 스폰될 위치 계산 (가장 위에 있는 맵의 바로 위)
-                float spawnY = activeChunks[activeChunks.Count - 1].transform.position.y + chunkLength;
+                // 가장 위 청크의 상단(= 새 청크의 하단)
+                float spawnBottomY = GetTopEdge(activeChunks[activeChunks.Count - 1], activeChunks[activeChunks.Count - 1].transform.position.y + chunkLength);
 
-                // 벗어난 청크는 풀에 반납(비활성화)하고 리스트에서 제거
                 ReturnToPool(chunk);
                 activeChunks.RemoveAt(i);
-
-                // 맨 위에 새로운 청크 스폰
-                SpawnChunk(spawnY);
+                SpawnChunk(spawnBottomY);
             }
         }
     }
 
-    private void SpawnChunk(float yPosition)
+    // bottomY: 이 청크의 하단(Renderer bounds 기준)이 위치할 Y좌표
+    private void SpawnChunk(float bottomY)
     {
-        // 현재 페이즈에 맞는 프리팹을 결정
         GameObject prefabToSpawn = GetNextChunkPrefab();
 
-        // 풀에서 꺼내오거나 새로 생성
-        GameObject newChunk = GetFromPool(prefabToSpawn);
+        if (prefabToSpawn == null)
+        {
+            Debug.LogError("[MapManager] SpawnChunk: prefab이 null입니다. Inspector에서 프리팹 연결을 확인하세요.");
+            return;
+        }
 
-        // 위치 설정 및 활성화
-        newChunk.transform.position = new Vector3(0, yPosition, 0);
+        GameObject newChunk = GetFromPool(prefabToSpawn);
+        // 임시로 원점에 배치 후 실제 bounds를 측정해 하단이 bottomY에 오도록 보정
+        newChunk.transform.position = Vector3.zero;
         newChunk.SetActive(true);
 
+        Renderer r = newChunk.GetComponentInChildren<Renderer>();
+        float pivotY = r != null ? bottomY + (0f - r.bounds.min.y) : bottomY;
+        newChunk.transform.position = new Vector3(0, pivotY, 0);
+
         activeChunks.Add(newChunk);
+        Debug.Log($"[MapManager] Spawning: {prefabToSpawn.name} | bottomY={bottomY:F2} pivotY={pivotY:F2} topY={GetTopEdge(newChunk, pivotY + chunkLength):F2}");
+    }
+
+    private float GetTopEdge(GameObject chunk, float fallback)
+    {
+        if (chunk == null) return fallback;
+        Renderer r = chunk.GetComponentInChildren<Renderer>();
+        return r != null ? r.bounds.max.y : fallback;
     }
 
     // --- Object Pooling Logic ---
@@ -151,7 +166,12 @@ public class MapManager : MonoBehaviour
                 return GetRandomPrefab(stage1Chunks);
 
             case MapPhase.Trans1to2:
-                // 트랜지션 맵을 하나 내보내고 나면, 바로 다음 맵부터는 2단계가 나오도록 페이즈를 전환합니다.
+                if (transition1to2 == null)
+                {
+                    Debug.LogError("[MapManager] transition1to2 프리팹이 null입니다. Inspector를 확인하세요.");
+                    currentPhase = MapPhase.Stage2;
+                    return null;
+                }
                 currentPhase = MapPhase.Stage2;
                 return transition1to2;
 
@@ -159,6 +179,12 @@ public class MapManager : MonoBehaviour
                 return GetRandomPrefab(stage2Chunks);
 
             case MapPhase.Trans2to3:
+                if (transition2to3 == null)
+                {
+                    Debug.LogError("[MapManager] transition2to3 프리팹이 null입니다. Inspector를 확인하세요.");
+                    currentPhase = MapPhase.Stage3;
+                    return null;
+                }
                 currentPhase = MapPhase.Stage3;
                 return transition2to3;
 
