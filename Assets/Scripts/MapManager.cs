@@ -6,7 +6,7 @@ public class MapManager : MonoBehaviour
     [Header("Scrolling Settings")]
     [SerializeField] private float scrollSpeed = 5f;
     [SerializeField] private float chunkLength = 20f;
-    [SerializeField] private float despawnY = -25f;
+    private float despawnY; // Start()에서 카메라 기준으로 자동 계산
 
     [Header("Map Prefabs")]
     [SerializeField] private GameObject[] startChunks;       // 처음 맵
@@ -28,13 +28,26 @@ public class MapManager : MonoBehaviour
 
     void Start()
     {
-        // 게임 시작 시 맵 3개를 세로로 이어 붙여 스폰합니다.
-        SpawnChunk(0f);
-        SpawnChunk(chunkLength);
-        SpawnChunk(chunkLength * 2f);
+        Camera cam = Camera.main;
+        float zDist = Mathf.Abs(cam.transform.position.z);
+        float halfH = Mathf.Tan(cam.fieldOfView * 0.5f * Mathf.Deg2Rad) * zDist;
+        float camBottom = cam.transform.position.y - halfH;
+        float camTop    = cam.transform.position.y + halfH;
 
-        // 처음 맵 스폰 직후, 다음 스폰부터는 1단계 맵이 나오도록 페이즈를 넘깁니다.
+        // 화면 하단보다 chunkLength 하나 아래에서 디스폰 (화면 밖으로 완전히 벗어난 뒤 제거)
+        despawnY = camBottom - chunkLength;
+
+        Debug.Log($"[MapManager] 화면 Y: {camBottom:F2}~{camTop:F2} | despawnY: {despawnY:F2} | chunkLength: {chunkLength}");
+
+        // StartMap 1개 — 화면 하단에서 시작
+        SpawnChunk(camBottom);
         currentPhase = MapPhase.Stage1;
+
+        // 화면 상단 + 여유분까지 Stage1 청크를 채움
+        for (float y = camBottom + chunkLength; y <= camTop + chunkLength; y += chunkLength)
+        {
+            SpawnChunk(y);
+        }
     }
 
     void Update()
