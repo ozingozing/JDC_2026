@@ -160,7 +160,7 @@ MonoBehaviour:
   fallingPrefab:
   - {fileID: 1849215552314109476, guid: b8f37595add21d34e81ac99f32462735, type: 3}
   - {fileID: 5053246515973865790, guid: cd928a41008bf3c49aa9d686932b3ef2, type: 3}
-  - {fileID: 0}
+  - {fileID: 498308191229091924, guid: d97f52e1cca103943bb43c46609381fa, type: 3}
 --- !u!114 &4086628171161129190
 MonoBehaviour:
   m_ObjectHideFlags: 0

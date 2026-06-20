@@ -47,6 +47,11 @@ public class WarningFade : MonoBehaviour
 
     private IEnumerator FadeRoutine()
     {
+        if(GameManager.Instance.isBossSpawned)
+        {
+            yield break;
+        }
+
         float elapsedTime = 0f;
 
         // ???? ?? ?????? ?????
@@ -88,9 +93,15 @@ public class WarningFade : MonoBehaviour
 
     private void SpawnFallingObject()
     {
-        if (fallingPrefab == null)
+        if (fallingPrefab == null || fallingPrefab.Length == 0)
         {
-            Debug.LogWarning($"{gameObject.name}: fallingPrefab?? ??????? ???????.");
+            Debug.LogWarning($"{gameObject.name}: fallingPrefab이 비어 있습니다.");
+            return;
+        }
+
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("GameManager.Instance가 없습니다.");
             return;
         }
 
@@ -102,7 +113,6 @@ public class WarningFade : MonoBehaviour
         }
         else if (targetRenderer != null)
         {
-            // Renderer?? ???? ???? ??? ???
             spawnPosition = targetRenderer.bounds.center;
         }
         else
@@ -110,12 +120,42 @@ public class WarningFade : MonoBehaviour
             spawnPosition = transform.position;
         }
 
-
         int currentStage = GameManager.Instance.currentStage;
+
+        // currentStage가 2 이상이면 마지막 몹, 즉 보스만 한 번 생성
+        if (currentStage >= 2)
+        {
+            if (GameManager.Instance.isBossSpawned)
+            {
+                return;
+            }
+
+            // 중요: Instantiate보다 먼저 true로 바꿔두는 게 안전함
+            GameManager.Instance.isBossSpawned = true;
+
+            Debug.Log("게임끝");
+
+            int lastIndex = fallingPrefab.Length - 1;
+
+            Instantiate(
+                fallingPrefab[lastIndex],
+                spawnPosition,
+                Quaternion.identity
+            );
+
+            return;
+        }
+
+        // currentStage 0 → 0번만
+        // currentStage 1 → 0~1번 랜덤
         int maxIdx = Mathf.Clamp(currentStage, 0, fallingPrefab.Length - 1);
         int randomIdx = Random.Range(0, maxIdx + 1);
 
-        GameObject.Instantiate(fallingPrefab[randomIdx], transform.position, Quaternion.identity);
+        Instantiate(
+            fallingPrefab[randomIdx],
+            spawnPosition,
+            Quaternion.identity
+        );
     }
 
     private void OnDestroy()

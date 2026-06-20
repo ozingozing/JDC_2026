@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using TMPro;
 public enum GameState { Ready, Playing, Paused, GameOver }
 
 public class GameManager : MonoBehaviour
@@ -21,6 +21,11 @@ public class GameManager : MonoBehaviour
     [Header("References")]
     public MapManager mapManager;
 
+    [SerializeField] private GameObject endPanel;
+    [SerializeField] private TMP_Text scoreText;
+
+    public bool isBossSpawned = false;
+
     private void Awake()
     {
         // 싱글톤 패턴 적용 (어디서든 GameManager.Instance 로 접근 가능)
@@ -30,6 +35,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        endPanel.SetActive(false);
         GameStart();
     }
 
@@ -85,7 +91,32 @@ public class GameManager : MonoBehaviour
         currentState = GameState.GameOver;
         Time.timeScale = 0f; // 화면 정지
 
-        // UI가 소수점까지 나오면 지저분하므로 내림(FloorToInt) 처리하여 출력
-        Debug.Log($"게임 오버! 최종 이동 거리: {Mathf.FloorToInt(currentScore)}");
+        endPanel.SetActive(true);
+        scoreText.text = $"Score: {currentScore}";
+    }
+
+    public void GameOver(string txt)
+    {
+        currentState = GameState.GameOver;
+        Time.timeScale = 0f; // 화면 정지
+
+        endPanel.SetActive(true);
+        scoreText.text = $"{txt}" +
+            $"Score: {currentScore}";
+    }
+
+    public void StopGame()
+    {
+        currentState = GameState.Paused;
+        Time.timeScale = 0f;
+        Debug.Log("게임 일시정지 및 종료 시도");
+
+        // 1. 실제 빌드된 게임 프로그램 종료
+        Application.Quit();
+
+        // 2. 유니티 에디터에서 플레이 모드(재생)를 즉시 종료하는 코드
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 }

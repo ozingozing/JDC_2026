@@ -37,6 +37,10 @@ public class HarpoonProjectile : MonoBehaviour
 
     void Update()
     {
+        if(ownerTransform == null)
+        {
+            return;
+        }
         switch (currentState)
         {
             case HarpoonState.Outbound:
@@ -58,6 +62,12 @@ public class HarpoonProjectile : MonoBehaviour
 
     private void CheckRange()
     {
+        if(ownerTransform == null)
+        {
+            Destroy(gameObject);
+            Debug.Log("플레이어 죽음");
+            return;
+        }
         float traveledDistance = Vector3.Distance(startPosition, transform.position);
 
         if (traveledDistance >= maxRange)
