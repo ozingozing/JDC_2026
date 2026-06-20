@@ -4,16 +4,17 @@ public class RandomSpawner : MonoBehaviour
 {
     public static RandomSpawner Instance { get; private set; }
 
-    [Header("Spawn Object")]
-    public GameObject spawnPrefab;
+    [Header("Enemy Spawn Object")]
+    public GameObject[] spawnPrefab;
 
     [Header("Spawn Items")]
     public GameObject[] spawnItems;
-    [Header("Itme Spawn Position")]
+
+    [Header("Item Spawn Position")]
     public float itemSpawnY = 30f;
 
     [Range(0f, 1f)]
-    public float itemSpawnChance = 0.2f; // 20% 확률
+    public float itemSpawnChance = 0.2f;
 
     [Header("Spawn Range")]
     public float minX = -5f;
@@ -49,14 +50,40 @@ public class RandomSpawner : MonoBehaviour
         float randomX = Random.Range(minX, maxX);
         Vector3 spawnPosition = new Vector3(randomX, enemySpawnY, fixedZ);
 
-        // 기본 오브젝트 생성
-        if (spawnPrefab != null)
+        GameObject selectedEnemy = GetRandomEnemyByStage();
+
+        if (selectedEnemy != null)
         {
-            Instantiate(spawnPrefab, spawnPosition, Quaternion.identity);
+            Instantiate(selectedEnemy, spawnPosition, Quaternion.identity);
         }
 
-        // 특정 확률로 아이템 생성
         TrySpawnItem();
+    }
+
+    private GameObject GetRandomEnemyByStage()
+    {
+        if (spawnPrefab == null || spawnPrefab.Length == 0)
+        {
+            Debug.LogWarning("스폰할 몬스터 프리팹이 없습니다.");
+            return null;
+        }
+
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("GameManager.Instance가 없습니다.");
+            return spawnPrefab[0];
+        }
+
+        int currentStage = GameManager.Instance.currentStage;
+
+        // currentStage가 0이면 0번까지만
+        // currentStage가 1이면 1번까지
+        // currentStage가 2이면 2번까지
+        int maxIndex = Mathf.Clamp(currentStage, 0, spawnPrefab.Length - 1);
+
+        int randomIndex = Random.Range(0, maxIndex + 1);
+
+        return spawnPrefab[randomIndex];
     }
 
     private void TrySpawnItem()
@@ -66,9 +93,7 @@ public class RandomSpawner : MonoBehaviour
             return;
         }
 
-        float randomValue = Random.value;
-
-        if (randomValue > itemSpawnChance)
+        if (Random.value > itemSpawnChance)
         {
             return;
         }
@@ -81,7 +106,7 @@ public class RandomSpawner : MonoBehaviour
 
         if (selectedItem != null)
         {
-            Instantiate(selectedItem, itemSpawnPosition, Quaternion.Euler(90, 0, 0));
+            Instantiate(selectedItem, itemSpawnPosition, Quaternion.Euler(90f, 0f, 0f));
         }
     }
 
@@ -92,9 +117,7 @@ public class RandomSpawner : MonoBehaviour
             return;
         }
 
-        float randomValue = Random.value;
-
-        if (randomValue > itemSpawnChance)
+        if (Random.value > itemSpawnChance)
         {
             return;
         }
@@ -104,7 +127,18 @@ public class RandomSpawner : MonoBehaviour
 
         if (selectedItem != null)
         {
-            Instantiate(selectedItem, pos, Quaternion.Euler(90, 0, 0));
+            Instantiate(selectedItem, pos, Quaternion.Euler(90f, 0f, 0f));
         }
+    }
+
+    public GameObject GetRandomSpawnItem()
+    {
+        if (spawnItems == null || spawnItems.Length == 0)
+        {
+            return null;
+        }
+
+        int randomIndex = Random.Range(0, spawnItems.Length);
+        return spawnItems[randomIndex];
     }
 }

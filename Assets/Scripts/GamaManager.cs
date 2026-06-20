@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float scorePerSecond = 10f; // 1초당 오르는 점수 (속도감 밸런싱 용도)
 
     [Header("Difficulty Upgrade")]
+    public int currentStage = 0;
     [SerializeField] private int nextUpgradeScore = 100; // 다음 난이도로 넘어갈 목표 점수
     [SerializeField] private int upgradeScoreStep = 200; // 난이도 업그레이드 후, 다음 목표치 증가량
 
@@ -42,6 +43,7 @@ public class GameManager : MonoBehaviour
             // 2. 목표 점수 도달 시 난이도 업그레이드
             if (currentScore >= nextUpgradeScore)
             {
+                currentStage++;
                 UpgradeDifficulty();
             }
         }
