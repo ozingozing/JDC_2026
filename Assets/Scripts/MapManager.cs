@@ -30,8 +30,9 @@ public class MapManager : MonoBehaviour
     void Start()
     {
         Camera cam = Camera.main;
-        float zDist = Mathf.Abs(cam.transform.position.z);
-        float halfH = Mathf.Tan(cam.fieldOfView * 0.5f * Mathf.Deg2Rad) * zDist;
+        float halfH = cam.orthographic
+            ? cam.orthographicSize
+            : Mathf.Tan(cam.fieldOfView * 0.5f * Mathf.Deg2Rad) * Mathf.Abs(cam.transform.position.z);
         float camBottom = cam.transform.position.y - halfH;
         float camTop    = cam.transform.position.y + halfH;
         camBottomY = camBottom;
