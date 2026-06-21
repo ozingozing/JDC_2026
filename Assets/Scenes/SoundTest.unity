@@ -2875,6 +2875,14 @@ MonoBehaviour:
   nextUpgradeScore: 100
   upgradeScoreStep: 200
   mapManager: {fileID: 79346048}
+  endPanel: {fileID: 0}
+  scoreText: {fileID: 0}
+  warningImage: {fileID: 0}
+  flashDuration: 0.5
+  flashCount: 3
+  startWarning: 0
+  isBossSpawned: 0
+  canStart: 0
 --- !u!4 &1342177119
 Transform:
   m_ObjectHideFlags: 0

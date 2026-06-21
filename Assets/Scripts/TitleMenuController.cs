@@ -18,7 +18,6 @@ public class TitleMenuController : MonoBehaviour
 
     [Header("Panels")]
     [SerializeField] private GameObject settingsPanel;
-
     private void Start()
     {
         if (startButton != null) startButton.onClick.AddListener(StartGame);
@@ -103,8 +102,6 @@ public class TitleMenuController : MonoBehaviour
             return DefaultGameplaySceneName;
         }
 
-        Screen.SetResolution(1080, 1920, false);
-        Screen.orientation = ScreenOrientation.Portrait;
         return gameplaySceneName;
     }
 }
