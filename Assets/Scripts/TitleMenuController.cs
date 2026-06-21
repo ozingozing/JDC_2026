@@ -18,7 +18,6 @@ public class TitleMenuController : MonoBehaviour
 
     [Header("Panels")]
     [SerializeField] private GameObject settingsPanel;
-
     private void Start()
     {
         if (startButton != null) startButton.onClick.AddListener(StartGame);
