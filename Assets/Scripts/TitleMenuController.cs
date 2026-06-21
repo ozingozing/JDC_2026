@@ -4,8 +4,11 @@ using UnityEngine.UI;
 
 public class TitleMenuController : MonoBehaviour
 {
+    private const string DefaultGameplaySceneName = "SampleScene";
+    private const string PreviousTestSceneName = "SoundTest";
+
     [Header("Scene")]
-    [SerializeField] private string gameplaySceneName = "SoundTest";
+    [SerializeField] private string gameplaySceneName = DefaultGameplaySceneName;
 
     [Header("Buttons")]
     [SerializeField] private Button startButton;
@@ -45,7 +48,13 @@ public class TitleMenuController : MonoBehaviour
     public void StartGame()
     {
         PlayUISound(SFXType.Click_SFX);
-        SceneManager.LoadScene(gameplaySceneName);
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayBGM(BGMType.InGame_BGM, true);
+        }
+
+        SceneManager.LoadScene(GetGameplaySceneName());
     }
 
     public void OpenSettings()
@@ -85,5 +94,15 @@ public class TitleMenuController : MonoBehaviour
         {
             SoundManager.Instance.PlaySFX(type);
         }
+    }
+
+    private string GetGameplaySceneName()
+    {
+        if (string.IsNullOrWhiteSpace(gameplaySceneName) || gameplaySceneName == PreviousTestSceneName)
+        {
+            return DefaultGameplaySceneName;
+        }
+
+        return gameplaySceneName;
     }
 }

@@ -47,6 +47,7 @@ public class AddPlayerStat : MonoBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             ApplyStatToPlayer();
+            SoundManager.Instance.PlaySFX(SFXType.GetItem_SFX);
             Destroy(gameObject); // 아이템을 먹은 후 제거
         }
     }

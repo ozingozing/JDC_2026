@@ -56,6 +56,7 @@ public class HarpoonLauncher : MonoBehaviour
         Quaternion fireRotation = GetMouseAimRotation(firePoint.position);
         GameObject harpoonObj = Instantiate(harpoonPrefab, firePoint.position, fireRotation);
         HarpoonProjectile harpoon = harpoonObj.GetComponent<HarpoonProjectile>();
+        SoundManager.Instance.PlaySFX(SFXType.WeaponShot_SFX);
 
         if (harpoon != null)
         {

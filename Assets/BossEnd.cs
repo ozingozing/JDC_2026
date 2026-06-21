@@ -6,5 +6,6 @@ public class BossEnd : MonoBehaviour
     {
         // 보스가 파괴될 때 게임 종료
         GameManager.Instance.GameOver("you got the boss\n");
+        SoundManager.Instance.StopLoopSFX(SFXType.GameClear_SFX);
     }
 }

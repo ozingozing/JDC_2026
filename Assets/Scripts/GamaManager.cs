@@ -125,6 +125,10 @@ public class GameManager : MonoBehaviour
     {
         currentState = GameState.Playing;
         Time.timeScale = 1f;
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayLoopSFX(SFXType.DeepSeaBase_SFX, 0.25f);
+        }
         Debug.Log("게임 시작!");
     }
 

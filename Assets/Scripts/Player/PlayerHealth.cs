@@ -31,6 +31,7 @@ public class PlayerHealth : MonoBehaviour
     {
         Player.Instance.currentHP -= damage;
         Player.Instance.currentHP = Mathf.Clamp(Player.Instance.currentHP, 0f, Player.Instance.maxHP);
+        SoundManager.Instance.PlaySFX(SFXType.HitPlayer_SFX);
 
         UpdateHPBar();
 
@@ -44,6 +45,7 @@ public class PlayerHealth : MonoBehaviour
     {
         Player.Instance.currentHP += healAmount;
         Player.Instance.currentHP = Mathf.Clamp(Player.Instance.currentHP, 0f, Player.Instance.maxHP);
+        SoundManager.Instance.PlaySFX(SFXType.BatteryHeal_SFX);
 
         UpdateHPBar();
     }
@@ -58,6 +60,7 @@ public class PlayerHealth : MonoBehaviour
     {
         Debug.Log("Player Dead!");
         GameManager.Instance.GameOver();
+        SoundManager.Instance.PlaySFX(SFXType.PlayerGameOver_SFX);
         Destroy(gameObject);
     }
 }

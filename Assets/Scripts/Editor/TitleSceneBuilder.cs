@@ -13,7 +13,7 @@ using UnityEngine.InputSystem.UI;
 public static class TitleSceneBuilder
 {
     private const string TitleScenePath = "Assets/Scenes/Title.unity";
-    private const string GameplayScenePath = "Assets/Scenes/SoundTest.unity";
+    private const string GameplayScenePath = "Assets/Scenes/SampleScene.unity";
 
     [MenuItem("Tools/JDC/Build Title Scene")]
     public static void BuildTitleScene()
@@ -79,7 +79,7 @@ public static class TitleSceneBuilder
         GameObject controllerObject = new GameObject("TitleMenuController");
         TitleMenuController controller = controllerObject.AddComponent<TitleMenuController>();
         SerializedObject controllerObjectData = new SerializedObject(controller);
-        controllerObjectData.FindProperty("gameplaySceneName").stringValue = "SoundTest";
+        controllerObjectData.FindProperty("gameplaySceneName").stringValue = "SampleScene";
         controllerObjectData.FindProperty("startButton").objectReferenceValue = startButton;
         controllerObjectData.FindProperty("settingsButton").objectReferenceValue = settingsButton;
         controllerObjectData.FindProperty("closeSettingsButton").objectReferenceValue = closeSettingsButton;

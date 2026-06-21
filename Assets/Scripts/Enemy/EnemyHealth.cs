@@ -39,6 +39,7 @@ public class EnemyHealth : MonoBehaviour
 
         // 데미지 입었을 때 이벤트 호출 (예: UI 반영, 핏자국 이펙트 등)
         onDamageTaken?.Invoke(currentHealth);
+        SoundManager.Instance.PlaySFX(SFXType.HitMonster_SFX);
 
         if (currentHealth <= 0)
         {
@@ -55,6 +56,7 @@ public class EnemyHealth : MonoBehaviour
 
         // 여기에 사망 시 처리 (예: Destroy(gameObject) 또는 오브젝트 풀 반환 등)
         Destroy(gameObject);
+        SoundManager.Instance.PlaySFX(SFXType.KillMonster_SFX);
     }
 
     private void DropItem()

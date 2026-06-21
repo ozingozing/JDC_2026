@@ -67,6 +67,7 @@ public class SoundManager : MonoBehaviour
     private readonly Dictionary<BGMType, BGMClipEntry> bgmLookup = new Dictionary<BGMType, BGMClipEntry>();
     private readonly Dictionary<SFXType, SFXClipEntry> sfxLookup = new Dictionary<SFXType, SFXClipEntry>();
     private readonly Dictionary<SFXType, AudioSource> loopingSfxSources = new Dictionary<SFXType, AudioSource>();
+    private readonly Dictionary<SFXType, float> loopingSfxVolumeScales = new Dictionary<SFXType, float>();
 
     private void Reset()
     {
@@ -150,6 +151,11 @@ public class SoundManager : MonoBehaviour
 
     public void PlayLoopSFX(SFXType type)
     {
+        PlayLoopSFX(type, 1f);
+    }
+
+    public void PlayLoopSFX(SFXType type, float volumeScale)
+    {
         if (!TryGetSFX(type, out SFXClipEntry entry))
         {
             return;
@@ -164,7 +170,8 @@ public class SoundManager : MonoBehaviour
         }
 
         source.clip = entry.clip;
-        source.volume = masterVolume * sfxVolume * entry.volume;
+        loopingSfxVolumeScales[type] = Mathf.Clamp01(volumeScale);
+        source.volume = GetLoopSFXVolume(type, entry);
 
         if (!source.isPlaying)
         {
@@ -292,9 +299,22 @@ public class SoundManager : MonoBehaviour
         {
             if (pair.Value != null)
             {
-                pair.Value.volume = masterVolume * sfxVolume;
+                if (sfxLookup.TryGetValue(pair.Key, out SFXClipEntry entry))
+                {
+                    pair.Value.volume = GetLoopSFXVolume(pair.Key, entry);
+                }
+                else
+                {
+                    pair.Value.volume = masterVolume * sfxVolume;
+                }
             }
         }
+    }
+
+    private float GetLoopSFXVolume(SFXType type, SFXClipEntry entry)
+    {
+        float volumeScale = loopingSfxVolumeScales.TryGetValue(type, out float scale) ? scale : 1f;
+        return masterVolume * sfxVolume * entry.volume * volumeScale;
     }
 
     private void EnsureDefaultEntries()
@@ -330,10 +350,20 @@ public class SoundManager : MonoBehaviour
 
         for (int i = 0; i < values.Length; i++)
         {
-            entries[i] = new SFXClipEntry { type = values[i], volume = 1f };
+            entries[i] = new SFXClipEntry { type = values[i], volume = GetDefaultSFXVolume(values[i]) };
         }
 
         return entries;
+    }
+
+    private static float GetDefaultSFXVolume(SFXType type)
+    {
+        return type switch
+        {
+            SFXType.DeepSeaBase_SFX => 0.25f,
+            SFXType.HitMonster_SFX => 0.3f,
+            _ => 1f
+        };
     }
 
 #if UNITY_EDITOR
