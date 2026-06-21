@@ -47,6 +47,8 @@ public class RandomSpawner : MonoBehaviour
 
     private void Spawn()
     {
+        if (GameManager.Instance != null && GameManager.Instance.isWarning) return;
+
         if(GameManager.Instance.canStart)
         {
             float randomX = Random.Range(minX, maxX);

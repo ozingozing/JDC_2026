@@ -1534,9 +1534,9 @@ MonoBehaviour:
   itemSpawnChance: 0.2
   minX: -5
   maxX: 5
-  enemySpawnY: 10
+  enemySpawnY: 20
   fixedZ: -1
-  spawnInterval: 0.5
+  spawnInterval: 0.8
 --- !u!4 &549170740
 Transform:
   m_ObjectHideFlags: 0
@@ -4813,6 +4813,7 @@ MonoBehaviour:
   startWarning: 0
   isBossSpawned: 0
   canStart: 0
+  isWarning: 0
 --- !u!1 &2015217394
 GameObject:
   m_ObjectHideFlags: 0

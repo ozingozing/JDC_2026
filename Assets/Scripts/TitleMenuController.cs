@@ -27,14 +27,13 @@ public class TitleMenuController : MonoBehaviour
         if (exitButton != null) exitButton.onClick.AddListener(ExitGame);
 
         if (settingsPanel != null)
-        {
             settingsPanel.SetActive(false);
-        }
+
+        // 타이틀: 가로 해상도
+        ApplyResolution(1920, 1080, ScreenOrientation.LandscapeLeft);
 
         if (SoundManager.Instance != null)
-        {
             SoundManager.Instance.PlayBGM(BGMType.Title_BGM);
-        }
     }
 
     private void OnDestroy()
@@ -49,10 +48,11 @@ public class TitleMenuController : MonoBehaviour
     {
         PlayUISound(SFXType.Click_SFX);
 
+        // 인게임: 세로 해상도로 전환
+        ApplyResolution(1080, 1920, ScreenOrientation.Portrait);
+
         if (SoundManager.Instance != null)
-        {
             SoundManager.Instance.PlayBGM(BGMType.InGame_BGM, true);
-        }
 
         SceneManager.LoadScene(GetGameplaySceneName());
     }
@@ -85,6 +85,15 @@ public class TitleMenuController : MonoBehaviour
         UnityEditor.EditorApplication.isPlaying = false;
 #else
         Application.Quit();
+#endif
+    }
+
+    private static void ApplyResolution(int width, int height, ScreenOrientation orientation)
+    {
+#if UNITY_ANDROID || UNITY_IOS
+        Screen.orientation = orientation;
+#else
+        Screen.SetResolution(width, height, Screen.fullScreen);
 #endif
     }
 

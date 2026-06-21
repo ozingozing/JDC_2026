@@ -8,6 +8,7 @@ public class WarningFade : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private Renderer targetRenderer;
+
     [Header("Spawn Point")]
     [SerializeField] private Transform fallingSpawnPoint;
 
@@ -19,156 +20,120 @@ public class WarningFade : MonoBehaviour
 
     private void Awake()
     {
-        // ?•Ì?????? ???? ???? ????? ??? ??? ??? ??®®??? Renderer ???
         if (targetRenderer == null)
-        {
             targetRenderer = GetComponentInChildren<Renderer>();
-        }
 
         if (targetRenderer != null)
         {
-            // ?? ??????????? ???? ??????? ?•Ì???? ???
             targetMaterial = targetRenderer.material;
-            originColor = targetMaterial.color;
+            originColor    = targetMaterial.color;
         }
         else
         {
-            Debug.LogError($"{gameObject.name}: Renderer?? ??? ?? ???????.");
+            Debug.LogError($"{gameObject.name}: RendererÎ•º Ï∞æÏùÑ Ïàò ÏóÜÏäµÎãàÎã§.");
         }
     }
 
     private void Start()
     {
         if (targetMaterial != null)
-        {
             StartCoroutine(FadeRoutine());
-        }
     }
 
     private IEnumerator FadeRoutine()
     {
-        if(GameManager.Instance.isBossSpawned)
-        {
+        if (GameManager.Instance != null && GameManager.Instance.isBossSpawned)
             yield break;
-        }
 
-        float elapsedTime = 0f;
-
-        // ???? ?? ?????? ?????
+        float elapsed = 0f;
         SetAlpha(originColor.a);
 
-        while (elapsedTime < lifeTime)
+        while (elapsed < lifeTime)
         {
-            elapsedTime += Time.deltaTime;
-
-            float progress = Mathf.Clamp01(elapsedTime / lifeTime);
-
-            // lifeTime ???? originColor.a ?? 0???? ????
-            float alpha = Mathf.Lerp(originColor.a, 0f, progress);
-
-            SetAlpha(alpha);
-
+            elapsed += Time.deltaTime;
+            SetAlpha(Mathf.Lerp(originColor.a, 0f, Mathf.Clamp01(elapsed / lifeTime)));
             yield return null;
         }
 
-        // ???????? ?????? ??????? ???
         SetAlpha(0f);
-
         SpawnFallingObject();
-
         Destroy(gameObject);
     }
 
     private void SetAlpha(float alpha)
     {
-        if (targetMaterial == null)
-        {
-            return;
-        }
-
-        Color newColor = originColor;
-        newColor.a = alpha;
-        targetMaterial.color = newColor;
+        if (targetMaterial == null) return;
+        Color c = originColor;
+        c.a = alpha;
+        targetMaterial.color = c;
     }
 
+    // ‚îÄ‚îÄ‚îÄ Ï±ÖÏûÑ: Ïä§Ìè∞ Ïó¨Î∂Ä ÌåêÎã® + Í≤ΩÍ≥† 1Ìöå Ìä∏Î¶¨Í±∞ ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ
     private void SpawnFallingObject()
     {
-        if (fallingPrefab == null || fallingPrefab.Length == 0)
+        if (fallingPrefab == null || fallingPrefab.Length == 0) return;
+        if (GameManager.Instance == null) return;
+
+        int stage = GameManager.Instance.currentStage;
+
+        if (stage >= 2 && !GameManager.Instance.isBossSpawned)
         {
-            Debug.LogWarning($"{gameObject.name}: fallingPrefab¿Ã ∫ÒæÓ ¿÷Ω¿¥œ¥Ÿ.");
+            if (!GameManager.Instance.startWarning)
+            {
+                // Î≥¥Ïä§ Îì±Ïû• Ï†Ñ Í≤ΩÍ≥† UIÎäî Ïó¨Í∏∞ÏÑú Îî± 1Î≤àÎßå Ìä∏Î¶¨Í±∞
+                GameManager.Instance.TriggerWarning();
+                GameManager.Instance.startWarning = true;
+                return; // Ïù¥Î≤àÏóî Ïä§Ìè∞ Ïïà Ìï®, Îã§Ïùå WarningFadeÏóêÏÑú Ïä§Ìè∞
+            }
+        }
+
+        // Í≤ΩÍ≥† UIÍ∞Ä Ïû¨ÏÉù Ï§ëÏù¥Î©¥ ÎÅùÎÇ† ÎïåÍπåÏßÄ ÎåÄÍ∏∞ ÌõÑ Ïä§Ìè∞
+        if (GameManager.Instance.isWarning)
+        {
+            StartCoroutine(WaitThenSpawn());
             return;
         }
 
-        if (GameManager.Instance == null)
-        {
-            Debug.LogWarning("GameManager.Instance∞° æ¯Ω¿¥œ¥Ÿ.");
-            return;
-        }
+        DoSpawn();
+    }
 
-        Vector3 spawnPosition;
+    // ‚îÄ‚îÄ‚îÄ Ï±ÖÏûÑ: Ïã§Ï†ú ÌîÑÎ¶¨Ìåπ Ïù∏Ïä§ÌÑ¥Ïä§ÌôîÎßå ÏàòÌñâ ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ
+    private void DoSpawn()
+    {
+        if (GameManager.Instance == null) return;
+        if (GameManager.Instance.isBossSpawned) return;
 
-        if (fallingSpawnPoint != null)
+        Vector3 pos = fallingSpawnPoint != null ? fallingSpawnPoint.position
+                    : targetRenderer != null    ? targetRenderer.bounds.center
+                    : transform.position;
+
+        int stage = GameManager.Instance.currentStage;
+
+        if (stage >= 2)
         {
-            spawnPosition = fallingSpawnPoint.position;
-        }
-        else if (targetRenderer != null)
-        {
-            spawnPosition = targetRenderer.bounds.center;
+            int lastIdx = fallingPrefab.Length - 1;
+            Instantiate(fallingPrefab[lastIdx], pos, Quaternion.identity);
+            GameManager.Instance.isBossSpawned = true;
+            Debug.Log("Î≥¥Ïä§ Ïä§Ìè∞");
         }
         else
         {
-            spawnPosition = transform.position;
+            int maxIdx   = Mathf.Clamp(stage, 0, fallingPrefab.Length - 1);
+            int randomIdx = Random.Range(0, maxIdx + 1);
+            Instantiate(fallingPrefab[randomIdx], pos, Quaternion.identity);
         }
+    }
 
-        int currentStage = GameManager.Instance.currentStage;
-
-        // currentStage∞° 2 ¿ÃªÛ¿Ã∏È ∏∂¡ˆ∏∑ ∏˜, ¡Ô ∫∏Ω∫∏∏ «— π¯ ª˝º∫
-        if (currentStage >= 2)
-        {
-            if (GameManager.Instance.isBossSpawned)
-            {
-                return;
-            }
-
-            // ¡ﬂø‰: Instantiate∫∏¥Ÿ ∏’¿˙ true∑Œ πŸ≤„µŒ¥¬ ∞‘ æ»¿¸«‘
-            GameManager.Instance.TriggerWarning();
-            if(!GameManager.Instance.startWarning)
-            {
-                GameManager.Instance.startWarning = true;
-                return;
-            }
-
-            Debug.Log("∞‘¿”≥°");
-
-            int lastIndex = fallingPrefab.Length - 1;
-
-            Instantiate(
-                fallingPrefab[lastIndex],
-                spawnPosition,
-                Quaternion.identity
-            );
-            GameManager.Instance.isBossSpawned = true;
-
-            return;
-        }
-
-        // currentStage 0 °Ê 0π¯∏∏
-        // currentStage 1 °Ê 0~1π¯ ∑£¥˝
-        int maxIdx = Mathf.Clamp(currentStage, 0, fallingPrefab.Length - 1);
-        int randomIdx = Random.Range(0, maxIdx + 1);
-
-        Instantiate(
-            fallingPrefab[randomIdx],
-            spawnPosition,
-            Quaternion.identity
-        );
+    // ‚îÄ‚îÄ‚îÄ Í≤ΩÍ≥† UI Ï¢ÖÎ£å ÎåÄÍ∏∞ ÌõÑ DoSpawn ÏßÅÌñâ (Ïû¨Í∑Ä ÏóÜÏùå) ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ
+    private IEnumerator WaitThenSpawn()
+    {
+        yield return new WaitWhile(() => GameManager.Instance != null && GameManager.Instance.isWarning);
+        DoSpawn();
     }
 
     private void OnDestroy()
     {
         if (targetMaterial != null)
-        {
             Destroy(targetMaterial);
-        }
     }
 }

@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
 
     public bool isBossSpawned = false;
     public bool canStart = false;
+    public bool isWarning = false;
 
     private void Awake()
     {
@@ -76,7 +77,9 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator WarningFlashRoutine()
     {
+        isWarning = true;
         warningImage.gameObject.SetActive(true);
+        SoundManager.Instance.PlaySFX(SFXType.BossAppear_SFX);
         for (int i = 0; i < flashCount; i++)
         {
             // 1. 점점 붉게 나타나기 (알파값 0 -> 0.6)
@@ -101,6 +104,7 @@ public class GameManager : MonoBehaviour
         }
 
         warningImage.color = Color.clear; // 완전히 투명하게 초기화
+        isWarning = false;
     }
     // ==========================================
 
