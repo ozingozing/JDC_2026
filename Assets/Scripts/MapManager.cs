@@ -65,7 +65,8 @@ public class MapManager : MonoBehaviour
         for (int i = activeChunks.Count - 1; i >= 0; i--)
         {
             GameObject chunk = activeChunks[i];
-            chunk.transform.Translate(Vector3.down * scrollSpeed * Time.deltaTime);
+            float newScrollSpeed = !GameManager.Instance.canStart ? scrollSpeed * 0.3f : scrollSpeed;
+            chunk.transform.Translate(Vector3.down * newScrollSpeed * Time.deltaTime);
 
             // 청크 상단이 카메라 하단 아래로 완전히 벗어나면 디스폰
             float topEdge = GetTopEdge(chunk, chunk.transform.position.y + chunkLength);

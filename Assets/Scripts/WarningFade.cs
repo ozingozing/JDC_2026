@@ -131,7 +131,12 @@ public class WarningFade : MonoBehaviour
             }
 
             // 중요: Instantiate보다 먼저 true로 바꿔두는 게 안전함
-            GameManager.Instance.isBossSpawned = true;
+            GameManager.Instance.TriggerWarning();
+            if(!GameManager.Instance.startWarning)
+            {
+                GameManager.Instance.startWarning = true;
+                return;
+            }
 
             Debug.Log("게임끝");
 
@@ -142,6 +147,7 @@ public class WarningFade : MonoBehaviour
                 spawnPosition,
                 Quaternion.identity
             );
+            GameManager.Instance.isBossSpawned = true;
 
             return;
         }

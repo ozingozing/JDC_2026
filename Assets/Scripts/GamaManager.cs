@@ -1,5 +1,8 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
+using Unity.Burst.CompilerServices;
+using UnityEngine.UI;
 public enum GameState { Ready, Playing, Paused, GameOver }
 
 public class GameManager : MonoBehaviour
@@ -24,7 +27,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject endPanel;
     [SerializeField] private TMP_Text scoreText;
 
+    // ==========================================
+    // [새로 추가됨] 경고 UI 연출을 위한 변수들
+    // ==========================================
+    [Header("Warning UI Setup")]
+    [SerializeField] private Image warningImage;         // 캔버스에 배치한 PNG 경고 이미지 컴포넌트 연결
+    [SerializeField] private float flashDuration = 0.5f; // 깜빡이는 속도 (초)
+    [SerializeField] private int flashCount = 3;         // 깜빡일 횟수
+    private Coroutine warningCoroutine;
+    public bool startWarning = false; // 외부에서 경고를 시작할 수 있는 플래그
+    // ==========================================
+
     public bool isBossSpawned = false;
+    public bool canStart = false;
 
     private void Awake()
     {
@@ -36,11 +51,62 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         endPanel.SetActive(false);
+        warningImage.gameObject.SetActive(false);
+        StartCoroutine(WaitStart());
+    }
+
+    private IEnumerator WaitStart()
+    {
+        yield return new WaitForSeconds(10f);
+        canStart = true;
         GameStart();
     }
 
+    // ==========================================
+    // [새로 추가됨] 외부에서 호출하거나 내부에서 쓸 경고 실행 함수
+    // ==========================================
+    public void TriggerWarning()
+    {
+        if (warningImage == null) return;
+
+        // 이미 실행 중인 경고 코루틴이 있다면 중지하고 새로 시작
+        if (warningCoroutine != null) StopCoroutine(warningCoroutine);
+        warningCoroutine = StartCoroutine(WarningFlashRoutine());
+    }
+
+    private IEnumerator WarningFlashRoutine()
+    {
+        warningImage.gameObject.SetActive(true);
+        for (int i = 0; i < flashCount; i++)
+        {
+            // 1. 점점 붉게 나타나기 (알파값 0 -> 0.6)
+            float elapsed = 0f;
+            while (elapsed < flashDuration)
+            {
+                elapsed += Time.deltaTime;
+                float alpha = Mathf.Lerp(0f, 0.6f, elapsed / flashDuration);
+                warningImage.color = new Color(1f, 1f, 1f, alpha); // 빨간색 오파시티 조절
+                yield return null;
+            }
+
+            // 2. 점점 투명하게 사라지기 (알파값 0.6 -> 0)
+            elapsed = 0f;
+            while (elapsed < flashDuration)
+            {
+                elapsed += Time.deltaTime;
+                float alpha = Mathf.Lerp(0.6f, 0f, elapsed / flashDuration);
+                warningImage.color = new Color(1f, 1f, 1f, alpha);
+                yield return null;
+            }
+        }
+
+        warningImage.color = Color.clear; // 완전히 투명하게 초기화
+    }
+    // ==========================================
+
     private void Update()
     {
+        if(!canStart) return;
         if (currentState == GameState.Playing)
         {
             // 1. 시간에 따라 점수(이동 거리) 증가

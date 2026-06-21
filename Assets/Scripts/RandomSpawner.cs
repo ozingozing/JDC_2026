@@ -47,17 +47,20 @@ public class RandomSpawner : MonoBehaviour
 
     private void Spawn()
     {
-        float randomX = Random.Range(minX, maxX);
-        Vector3 spawnPosition = new Vector3(randomX, enemySpawnY, fixedZ);
-
-        GameObject selectedEnemy = spawnPrefab;
-
-        if (selectedEnemy != null)
+        if(GameManager.Instance.canStart)
         {
-            Instantiate(selectedEnemy, spawnPosition, Quaternion.identity);
-        }
+            float randomX = Random.Range(minX, maxX);
+            Vector3 spawnPosition = new Vector3(randomX, enemySpawnY, fixedZ);
 
-        TrySpawnItem();
+            GameObject selectedEnemy = spawnPrefab;
+
+            if (selectedEnemy != null)
+            {
+                Instantiate(selectedEnemy, spawnPosition, Quaternion.identity);
+            }
+
+            TrySpawnItem();
+        }
     }
 
 
