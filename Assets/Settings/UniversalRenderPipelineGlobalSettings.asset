@@ -82,7 +82,7 @@ MonoBehaviour:
       - rid: 8049341463835967488
       - rid: 8049341463835967490
       - rid: 8049341463835967493
-  m_AssetVersion: 10
+  m_AssetVersion: 8
   m_ObsoleteDefaultVolumeProfile: {fileID: 0}
   m_RenderingLayerNames:
   - Light Layer default

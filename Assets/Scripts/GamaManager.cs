@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Difficulty Upgrade")]
     public int currentStage = 0;
-    [SerializeField] private int nextUpgradeScore = 100; // 다음 난이도로 넘어갈 목표 점수
+    [SerializeField] private int nextUpgradeScore = 300; // 다음 난이도로 넘어갈 목표 점수
     [SerializeField] private int upgradeScoreStep = 200; // 난이도 업그레이드 후, 다음 목표치 증가량
 
     [Header("References")]

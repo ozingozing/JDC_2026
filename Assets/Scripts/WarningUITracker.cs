@@ -69,6 +69,7 @@ public class WarningUITracker : MonoBehaviour
         foreach (var rd in GetComponentsInChildren<Renderer>())
             rd.enabled = false;
 
+        Debug.Log($"[WarningUI] 생성완료 | size={uiRect.sizeDelta} | mat={instanceMaterial != null} | canvas={_warningCanvas != null}");
         StartCoroutine(FadeRoutine());
     }
 
@@ -98,7 +99,11 @@ public class WarningUITracker : MonoBehaviour
         uiRect.localPosition = localPos;
 
         // 셰이더에 플레이어 위치 + 시야 반지름 전달
-        if (instanceMaterial == null || VisionController.Instance == null) return;
+        if (instanceMaterial == null || VisionController.Instance == null)
+        {
+            Debug.LogWarning($"[WarningUI] Update 스킵 | mat={instanceMaterial != null} | vision={VisionController.Instance != null}");
+            return;
+        }
 
         Vector3 playerVP = mainCamera.WorldToViewportPoint(Player.Instance.transform.position);
         instanceMaterial.SetVector("_PlayerScreenPos", new Vector4(playerVP.x, playerVP.y, 0f, 0f));

@@ -30,8 +30,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _EdgeSoftness: 0.1
-    - _Radius: 0.18768045
+    - _Radius: 0.22768813
     m_Colors:
-    - _PlayerScreenPos: {r: 0.9277617, g: 0.11501446, b: 0, a: 0}
+    - _PlayerScreenPos: {r: 0.5, g: 0.11501446, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

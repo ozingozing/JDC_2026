@@ -21,7 +21,7 @@ public class RandomSpawner : MonoBehaviour
     public float maxX = 5f;
 
     [Header("Enemy Spawn Position")]
-    public float enemySpawnY = 0f;
+    public float enemySpawnY = 10f;
 
     public float fixedZ = 0f;
 

@@ -93,7 +93,16 @@ public class TitleMenuController : MonoBehaviour
 #if UNITY_ANDROID || UNITY_IOS
         Screen.orientation = orientation;
 #else
-        Screen.SetResolution(width, height, Screen.fullScreen);
+        // 모니터 안에 딱 맞는 최소 비율로 세로 창 생성
+        float scale = Mathf.Min(
+            (float)Screen.currentResolution.width  / width,
+            (float)Screen.currentResolution.height / height
+        );
+        Screen.SetResolution(
+            Mathf.RoundToInt(width  * scale),
+            Mathf.RoundToInt(height * scale),
+            false
+        );
 #endif
     }
 
@@ -112,8 +121,6 @@ public class TitleMenuController : MonoBehaviour
             return DefaultGameplaySceneName;
         }
 
-        Screen.SetResolution(1080, 1920, false);
-        Screen.orientation = ScreenOrientation.Portrait;
         return gameplaySceneName;
     }
 }
